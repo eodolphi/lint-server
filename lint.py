@@ -55,7 +55,7 @@ def status(user, repo, sha):
             'context': 'linting'
         }
 
-    response = requests.post(
+    response = github.post(
         'https://api.github.com/repos/{user}/{repo}/statuses/{sha}'.format(
             user=user, repo=repo, sha=sha
         ),
