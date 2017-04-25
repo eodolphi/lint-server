@@ -56,7 +56,9 @@ def status(user, repo, sha):
         }
 
     response = requests.post(
-        urljoin('https://api.github.com/', request.path),
+        'https://api.github.com/repos/{user}/{repo}/statuses/{sha}'.format(
+            user=user, repo=repo, sha=sha
+        ),
         json.dumps(status)
     )
 
