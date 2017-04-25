@@ -24,7 +24,11 @@ def webhook():
         event = request.headers['X-GitHub-Event']
         signature = request.headers['X-Hub-Signature']
 
-        mac = hmac.new(app.config['GITHUB_WEBHOOK_SECRET'], msg=request.data, digestmod=hashlib.sha1)
+        mac = hmac.new(
+            app.config['GITHUB_WEBHOOK_SECRET'],
+            msg=request.data,
+            digestmod=hashlib.sha1
+        )
         if not 'sha1={}'.format(mac.hexdigest()) == signature:
             return 'Invalid signature', 403
 
