@@ -86,7 +86,9 @@ def status(user, repo, sha):
         'state': report.status,
         'description': report.summary,
         'context': 'linting',
-        'target_url': url_for('report', user=user, repo=repo, sha=sha, _external=True)
+        'target_url': url_for(
+            'report', user=user, repo=repo, sha=sha, _external=True
+        )
     }
 
     response = github.post(
