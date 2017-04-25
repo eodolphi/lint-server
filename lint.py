@@ -3,12 +3,16 @@ import json
 import hashlib
 import hmac
 
-from flask import Flask, request
+from flask import Flask, request, url_for
+from flask_redis import FlaskRedis
 import requests
 
 app = Flask(__name__)
 app.config['GITHUB_WEBHOOK_SECRET'] = os.environ.get('GITHUB_WEBHOOK_SECRET')
 app.config['GITHUB_ACCESS_TOKEN'] = os.environ.get('GITHUB_ACCESS_TOKEN')
+app.config['REDIS_URL'] = os.environ.get('REDIS_URL')
+
+redis_store = FlaskRedis(app)
 
 
 github = requests.Session()
@@ -16,6 +20,38 @@ github.headers.update({
     'Content-Type': 'application/json',
     'Authorization': 'token {}'.format(app.config['GITHUB_ACCESS_TOKEN'])
 })
+
+
+class Report(object):
+    def __init__(self, text):
+        self.raw = text
+
+    def save(self, user, repo, sha):
+        redis_store.set(self._redis_key(user, repo, sha), self.raw)
+
+    @staticmethod
+    def _redis_key(user, repo, sha):
+        return '{}-{}-{}'.format(user, repo, sha)
+
+    @classmethod
+    def get(cls, user, repo, sha):
+        return cls(redis_store.get(cls._redis_key(user, repo, sha)))
+
+    @property
+    def status(self):
+        if not self.raw:
+            return 'success'
+        else:
+            return 'failure'
+
+    @property
+    def summary(self):
+        if not self.raw:
+            return 'No issues found'
+        else:
+            return 'Found {} styling issues'.format(
+                len(self.raw.split("\n"))
+            )
 
 
 @app.route('/webhook/', methods=['GET', 'POST'])
@@ -42,20 +78,16 @@ def webhook():
 
 @app.route('/repos/<user>/<repo>/statuses/<sha>', methods=['POST'])
 def status(user, repo, sha):
-    result = request.get_data().strip()
+    report = Report(request.get_data().strip())
 
-    if result:
-        status = {
-            'state': 'failure',
-            'description': 'Linting failed',
-            'context': 'linting'
-        }
-    else:
-        status = {
-            'state': 'success',
-            'description': 'No style issues found',
-            'context': 'linting'
-        }
+    report.save(user, repo, sha)
+
+    status = {
+        'state': report.status,
+        'description': report.summary,
+        'context': 'linting',
+        'target_url': url_for('report', user=user, repo=repo, sha=sha, _external=True)
+    }
 
     response = github.post(
         'https://api.github.com/repos/{user}/{repo}/statuses/{sha}'.format(
@@ -65,7 +97,15 @@ def status(user, repo, sha):
     )
 
     response.raise_for_status()
+    print status
+
     return json.dumps(status), 200
+
+
+@app.route('/reports/<user>/<repo>/statuses/<sha>')
+def report(user, repo, sha):
+    report = Report.get(user, repo, sha)
+    return report.raw, 200
 
 
 def pending():
