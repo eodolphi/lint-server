@@ -38,7 +38,7 @@ def webhook():
         return '', 201
 
 
-@app.route('/status/<user>/<repo>/statuses/<sha>', methods=['POST'])
+@app.route('/<user>/<repo>/statuses/<sha>', methods=['POST'])
 def status():
     result = request.data
 
@@ -76,5 +76,5 @@ def pending():
         payload['repository']['statuses_url'].format(sha=ref),
         json.dumps(status)
     )
-    print '!!!', payload
+
     response.raise_for_status()
