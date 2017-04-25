@@ -42,6 +42,8 @@ def webhook():
 def status(user, repo, sha):
     result = request.get_data().strip()
 
+    import ipdb;ipdb.set_trace()
+
     if result:
         status = {
             'state': 'failure',
