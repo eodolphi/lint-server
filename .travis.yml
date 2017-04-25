@@ -4,7 +4,7 @@ python:
     - 2.7.9
 env:
     global:
-        - LINTER_URL='https://linter.dokku.onepercentclub.com'
+        - LINTER_URL=https://linter.dokku.onepercentclub.com
 
 install: 
     - pip install linter-cli flake8
