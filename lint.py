@@ -38,7 +38,7 @@ def webhook():
         return '', 201
 
 
-@app.route('/<user>/<repo>/statuses/<sha>', methods=['POST'])
+@app.route('/repos/<user>/<repo>/statuses/<sha>', methods=['POST'])
 def status(user, repo, sha):
     result = request.data
 
