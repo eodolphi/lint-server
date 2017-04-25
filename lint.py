@@ -56,7 +56,8 @@ def status():
         }
 
     response = requests.post(
-        urljoin('https://api.github.com/', request.path)
+        urljoin('https://api.github.com/', request.path),
+        json.dumps(status)
     )
 
     response.raise_for_status()
