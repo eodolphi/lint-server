@@ -1,4 +1,5 @@
 import os
+from urlparse import urljoin
 
 import json
 import hashlib
@@ -32,12 +33,36 @@ def webhook():
         if event == 'ping':
             return json.dumps({'msg': 'hi'})
         if event == 'push':
-            lint()
+            pending()
 
         return '', 201
 
 
-def lint():
+@app.route('/status/<user>/<repo>/statuses/<sha>', methods=['POST'])
+def status():
+    result = request.data
+
+    if result:
+        status = {
+            'state': 'failure',
+            'description': 'Linting failed',
+            'context': 'linting'
+        }
+    else:
+        status = {
+            'state': 'success',
+            'description': 'No style issues found',
+            'context': 'linting'
+        }
+
+    response = requests.post(
+        urljoin('https://api.github.com/', request.path)
+    )
+
+    response.raise_for_status()
+
+
+def pending():
     payload = request.json
     ref = payload['ref']
 
