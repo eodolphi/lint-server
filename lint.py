@@ -3,7 +3,7 @@ import json
 import hashlib
 import hmac
 
-from flask import Flask, request, url_for
+from flask import Flask, request, url_for, render_template
 from flask_redis import FlaskRedis
 import requests
 
@@ -43,6 +43,10 @@ class Report(object):
             return 'success'
         else:
             return 'failure'
+
+    @property
+    def issues(self):
+        return [line.split(':') for line in self.raw.split("\n")]
 
     @property
     def summary(self):
@@ -99,7 +103,6 @@ def status(user, repo, sha):
     )
 
     response.raise_for_status()
-    print status
 
     return json.dumps(status), 200
 
@@ -107,7 +110,14 @@ def status(user, repo, sha):
 @app.route('/reports/<user>/<repo>/statuses/<sha>')
 def report(user, repo, sha):
     report = Report.get(user, repo, sha)
-    return report.raw, 200
+
+    context = {
+        'issues': report.issues,
+        'user': user,
+        'repo': repo,
+        'sha': sha
+    }
+    return render_template("report.html", **context)
 
 
 def pending():
@@ -116,7 +126,7 @@ def pending():
 
     status = {
         'state': 'pending',
-        'description': 'Waiting for linting result',
+        'description': 'Waiting for report',
         'context': 'linting'
     }
     response = github.post(

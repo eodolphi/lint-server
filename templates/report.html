@@ -1,0 +1,22 @@
+<html>
+    <body>
+        {{ context }}
+        <a href="https://github.com/{{ user }}/{{ repo }}">{{ user }}/{{ repo }}</a>
+        {% if not issues %}
+        <h1>All clean!</h1>
+        {% else %}
+        <h1>Found {{ issues|length }} styling issue(s)</h2>
+
+        <ul>
+            {% for issue in issues %}
+                <li>
+                    <a href="http://github.com/{{ user }}/{{ repo }}/blob/{{ sha }}/{{issue.0}}#L{{ issue.1 }}">
+                        {{ issue.0 }}:{{ issue.1}}
+                    </a>
+                    {{ issue.3 }}
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </body>
+</html>
