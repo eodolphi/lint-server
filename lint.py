@@ -65,7 +65,7 @@ def status():
 
 def pending():
     payload = request.json
-    ref = payload['ref']
+    ref = payload['head_commit']['id']
 
     status = {
         'state': 'pending',
