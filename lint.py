@@ -3,12 +3,8 @@ import os
 import json
 import hashlib
 import hmac
-import time
-import os
-import subprocess
 
 from flask import Flask, request
-import sh
 import requests
 
 app = Flask(__name__)
