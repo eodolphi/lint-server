@@ -40,7 +40,7 @@ def webhook():
 
 @app.route('/repos/<user>/<repo>/statuses/<sha>', methods=['POST'])
 def status(user, repo, sha):
-    result = request.data
+    result = request.get_data().strip()
 
     if result:
         status = {
@@ -63,6 +63,7 @@ def status(user, repo, sha):
     )
 
     response.raise_for_status()
+    return json.dumps(status), 200
 
 
 def pending():
@@ -80,3 +81,7 @@ def pending():
     )
 
     response.raise_for_status()
+
+
+if __name__ == "__main__":
+        app.run()

@@ -1,0 +1,15 @@
+language: python
+
+python:
+    - 2.7.9
+env:
+    global:
+        - LINTER_URL='https://linter.dokku.onepercentclub.com'
+
+install: 
+    - pip install linter-cli
+before_script: flake8 | linter
+script: echo 'success'
+
+              
+
