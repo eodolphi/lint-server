@@ -1,6 +1,4 @@
 import os
-from urlparse import urljoin
-
 import json
 import hashlib
 import hmac
@@ -41,8 +39,6 @@ def webhook():
 @app.route('/repos/<user>/<repo>/statuses/<sha>', methods=['POST'])
 def status(user, repo, sha):
     result = request.get_data().strip()
-
-    import ipdb;ipdb.set_trace()
 
     if result:
         status = {
