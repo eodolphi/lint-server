@@ -73,7 +73,7 @@ def pending():
         'context': 'linting'
     }
     response = github.post(
-        payload['repository']['statuses_url'],
+        payload['repository']['statuses_url'].format(sha=ref),
         json.dumps(status)
     )
     print '!!!', payload
