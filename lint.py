@@ -56,7 +56,8 @@ def status():
         }
 
     response = requests.post(
-        urljoin('https://api.github.com/', request.path)
+        urljoin('https://api.github.com/', request.path),
+        json.dumps(status)
     )
 
     response.raise_for_status()
@@ -75,5 +76,5 @@ def pending():
         payload['repository']['statuses_url'],
         json.dumps(status)
     )
-
+    print '!!!', payload
     response.raise_for_status()
