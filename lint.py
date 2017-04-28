@@ -115,6 +115,7 @@ def report(user, repo, sha):
 
     context = {
         'issues': report.issues,
+        'status': report.status,
         'user': user,
         'repo': repo,
         'sha': sha
