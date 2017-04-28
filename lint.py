@@ -18,7 +18,7 @@ redis_store = FlaskRedis(app)
 github = requests.Session()
 github.headers.update({
     'Content-Type': 'application/json',
-    'User-Agent': 'Linter-server'
+    'User-Agent': 'Linter-server',
     'Authorization': 'token {}'.format(app.config['GITHUB_ACCESS_TOKEN'])
 })
 
