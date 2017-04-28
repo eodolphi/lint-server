@@ -103,6 +103,7 @@ def status(user, repo, sha):
         json.dumps(status)
     )
 
+    print response.content, status
     response.raise_for_status()
 
     return json.dumps(status), 200
